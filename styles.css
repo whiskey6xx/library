@@ -33,7 +33,7 @@ button {
 
 .grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto 0.5em;
     background-color: #2196F3;
     padding: 10px;
     margin-left: 5%;
@@ -60,4 +60,19 @@ hr {
 	border-top: 1px solid black;
     margin-left: 5%;
     margin-right: 5%;
+}
+
+.delete-button {
+    background-color: red;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    color: wheat;
+    padding: 1px;
+    width: 1.5em;
+    height: 1.5em;
+    font-size: 1em;
+    text-align: center;
+    border-radius: 0.5rem;
+    margin: 2em;
+    float: right;
+    text-decoration: none;
 }

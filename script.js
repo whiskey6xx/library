@@ -11,37 +11,107 @@ class book {
     }
 }
 
-titleInput = document.querySelector("#title");
-authorInput = document.querySelector("#author");
-yearInput = document.querySelector("#year");
+class UI {
+    static displayBooks() {
+        const books = Store.grabBooks();
+        books.forEach((book) => UI.addBook(book));
+    }
 
 
-
-
-document.querySelector('#book-form').addEventListener('submit', (e) => {
-    // Prevent actual submit
-    e.preventDefault();
-    console.log(titleInput.value);
-    console.log(authorInput.value);
-    console.log(yearInput.value);
-    //create book object based on the input
-    newBook = new book(titleInput.value, authorInput.value, yearInput.value);
-    console.log(newBook.title);
-    console.log(newBook.author);
-    console.log(newBook.year);
-
+    static addBook(book) {
     //need to create element
     //selects element from the dom with the ID of book-list
     const list = document.querySelector('#book-list');
     //creates an element in the dom as a table row
-    const row = document.createElement('div');
-    row.className = "grid-container";
+    const entry = document.createElement('div');
+    entry.className = "grid-container";
     //sets the inner html of the table row with table data elements, each that have our pieces of info
-    row.innerHTML = `
-        <div class="grid-item">${newBook.title}</div>
-        <div class="grid-item">${newBook.author}</div>
-        <div class="grid-item">${newBook.year}</div>
+    entry.innerHTML = `
+        <div class="grid-item">${book.title}</div>
+        <div class="grid-item">${book.author}</div>
+        <div class="grid-item">${book.year}</div>
+        <a href="#" class="delete-button">x</a>
         `;
     //calls the appendChild method of list to add the row
-    list.appendChild(row);
-    })
+    list.appendChild(entry);
+    }
+
+    static clear() {
+        document.querySelector("#title").value = '';
+        document.querySelector("#author").value = '';
+        document.querySelector("#year").value = '';
+    }
+    
+}
+
+class Store {
+    static grabBooks() {
+        let books;
+        if (localStorage.getItem('books') === null) {
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem('books'))
+        }
+        return books;
+    }
+
+    static addBook(book) {        
+        const books = Store.grabBooks();
+        books.push(book);
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+
+    static removeBook(title) {
+        const books = Store.grabBooks();
+        books.forEach((book, index) => {
+            if (book.title === title) {
+                books.splice(index, 1);
+            }
+        })
+    }
+}
+
+class alerts {
+    static bookAdded() {
+        alert("Book added successfully!")
+    }
+    static bookRemoved() {
+        alert("Book removed successfully!")
+    }
+    static invalidEntry() {
+        alert("Invalid Entry! Please input valid entries!")
+    }
+}
+
+//function that checks if the variable is a integer
+function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) };
+
+//listens for page load up and displays the books
+document.addEventListener('DOMContentLoaded', UI.displayBooks())
+
+
+//listen for form submission
+document.querySelector('#book-form').addEventListener('submit', (e) => {
+    // Prevent actual submit
+    e.preventDefault();
+    
+    //form values
+    titleInput = document.querySelector("#title").value;
+    authorInput = document.querySelector("#author").value;
+    yearInput = document.querySelector("#year").value;
+
+    //form validation
+    if(titleInput === '' || authorInput === '' || yearInput === '') {
+        alerts.invalidEntry();
+    } else if (isNumber(yearInput) === false) {
+        alerts.invalidEntry();
+    } else {
+        //create book object based on the input
+        newBook = new book(titleInput, authorInput, yearInput);
+        Store.addBook(newBook);
+        UI.addBook(newBook);
+        UI.clear();
+        alerts.bookAdded();
+    }
+
+})
