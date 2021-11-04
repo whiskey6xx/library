@@ -17,7 +17,6 @@ class UI {
         books.forEach((book) => UI.addBook(book));
     }
 
-
     static addBook(book) {
     //need to create element
     //selects element from the dom with the ID of book-list
@@ -36,6 +35,13 @@ class UI {
     list.appendChild(entry);
     }
 
+    static removeBook(element) {
+        if (element.classList.contains('delete-button')) {
+            console.log(element);
+            element.parentElement.remove();
+        }
+    }
+
     static clear() {
         document.querySelector("#title").value = '';
         document.querySelector("#author").value = '';
@@ -52,7 +58,9 @@ class Store {
         } else {
             books = JSON.parse(localStorage.getItem('books'))
         }
+        console.log(books);
         return books;
+        
     }
 
     static addBook(book) {        
@@ -68,6 +76,7 @@ class Store {
                 books.splice(index, 1);
             }
         })
+        localStorage.setItem('books', JSON.stringify(books));
     }
 }
 
@@ -87,7 +96,7 @@ class alerts {
 function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) };
 
 //listens for page load up and displays the books
-document.addEventListener('DOMContentLoaded', UI.displayBooks())
+document.addEventListener('DOMContentLoaded', (UI.displayBooks(), console.log(Store.grabBooks)))
 
 
 //listen for form submission
@@ -114,4 +123,10 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
         alerts.bookAdded();
     }
 
+})
+
+//listen for delete 
+document.querySelector('#book-list').addEventListener('click', (e) => {
+    UI.removeBook(e.target);
+    Store.removeBook(e.target.previousElementSibling.previousElementSibling.previousElementSibling.textContent);
 })
